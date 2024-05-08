@@ -1,6 +1,7 @@
 package com.example.oficiosprojectspring.repository;
 
 import com.example.oficiosprojectspring.repository.model.Usuario;
+import com.mysql.cj.MysqlType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
@@ -9,6 +10,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.ResultSet;
 
 @Repository
 public class UsuarioRepository implements IUsuarioRepository{
@@ -19,7 +21,7 @@ public class UsuarioRepository implements IUsuarioRepository{
     @Override
     public Usuario getById(int idUsuario)  throws SQLException{
         Usuario usuario = null;
-        String query = "SELECT * FROM USUARIO WHERE id = ?";
+        String query = "SELECT * FROM Usuario WHERE idUsuario = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareCall(query)){
             preparedStatement.setInt(1,idUsuario);
@@ -29,6 +31,7 @@ public class UsuarioRepository implements IUsuarioRepository{
                 usuario = Usuario.builder().idUsuario(resultSet.getInt(1))
                         .nombre(resultSet.getString(2))
                         .apellidos(resultSet.getString(3))
+                        .idOficio(resultSet.getInt(4))
                         .build();
             }
         }
@@ -55,25 +58,31 @@ public class UsuarioRepository implements IUsuarioRepository{
 
     @Override
     public Usuario deleteById(int idUsuario) throws SQLException{
-        Usuario usuario;
-        String query = "DELETE FROM USUARIO WHERE id = ?";
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(query)){
-            preparedStatement.setInt(1,idUsuario);
+        Usuario usuario = getById(idUsuario);
+        int rowsAffected;
+        if (usuario==null)
+            return null;
 
-            usuario = getById(idUsuario);
-            if (usuario!=null)
-                preparedStatement.executeUpdate();
+        String query = "{ ? = call eliminar_usuario(?) }";
+        try(Connection connection = dataSource.getConnection();
+            CallableStatement callableStatement = connection.prepareCall(query)){
+            callableStatement.setInt(2,idUsuario);
+            callableStatement.registerOutParameter(1, Types.INTEGER);
+
+            callableStatement.execute(); // Tengo que poner execute para que me deje recoger el return
+
+            rowsAffected = callableStatement.getInt(1); // Recojo el return
+
         }
 
-        return usuario;
+        return rowsAffected>0?usuario:null;
     }
 
     @Override
     public Usuario insertUsuario(Usuario usuario) throws SQLException{
         if (usuario==null)
             return null;
-        int id=0;
+        int id;
         String query = "{ call crear_usuario(?,?,?,?,?) }";
         try(Connection connection = dataSource.getConnection();
             CallableStatement callableStatement = connection.prepareCall(query)){
@@ -82,32 +91,37 @@ public class UsuarioRepository implements IUsuarioRepository{
             callableStatement.setString(3,usuario.getNombre());
             callableStatement.setString(4,usuario.getApellidos());
             callableStatement.setInt(5,usuario.getIdOficio());
+            callableStatement.registerOutParameter(1,Types.INTEGER);
 
-            callableStatement.executeUpdate();
+            callableStatement.execute();
 
             id = callableStatement.getInt(1);
 
         }
 
-        return getById(id); // tambien se puede hacer buscando con el getById
+        return getById(id);
     }
 
     @Override
     public Usuario updateUsuario(Usuario usuario) throws SQLException{
         if (usuario==null)
             return null;
-        int rowsAffected = 0;
-        String query = "UPDATE USUARIO SET nombre=?,apellidos=?,Oficio_idOficio=? WHERE idUsuario = ?";
+        int rowsAffected;
+        String query = "{ ? = call actualizar_usuario(?,?,?,?) }";
         try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(query)){
-            preparedStatement.setString(1,usuario.getNombre());
-            preparedStatement.setString(2,usuario.getApellidos());
-            preparedStatement.setInt(3,usuario.getIdOficio());
-            preparedStatement.setInt(4,usuario.getIdUsuario());
+            CallableStatement callableStatement = connection.prepareCall(query)){
+            callableStatement.setInt(2,usuario.getIdUsuario());
+            callableStatement.setString(3,usuario.getNombre());
+            callableStatement.setString(4,usuario.getApellidos());
+            callableStatement.setInt(5,usuario.getIdOficio());
+            callableStatement.registerOutParameter(1,Types.INTEGER);
 
-            rowsAffected = preparedStatement.executeUpdate();
+            callableStatement.execute();
+
+            rowsAffected = callableStatement.getInt(1);
+
         }
 
-        return rowsAffected>0?usuario:null; // tambien se puede hacer buscando con el getById
+        return rowsAffected>0?usuario:null;
     }
 }

@@ -13,7 +13,7 @@ import java.sql.Blob;
 public class Oficio {
     private int idOficio;
     private String descripción;
-    private Blob image;
+    private String image;
     private String imageUrl;
 
     @Override
