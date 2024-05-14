@@ -20,9 +20,9 @@ public class MyDataSource {
         try {
             dataSource = new OracleDataSource();
             dataSource.setURL("jdbc:oracle:thin:@//192.168.1.145:1539/xe");
-            dataSource.setUser("sys");
+            dataSource.setUser("sys as sysdba");
             dataSource.setPassword("oracle");
-            dataSource.setRoleName("SYSDBA");
+            dataSource.setRoleName("sysdba");
         } catch (SQLException e ){
             e.printStackTrace();
         }
