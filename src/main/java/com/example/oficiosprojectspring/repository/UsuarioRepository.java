@@ -1,7 +1,6 @@
 package com.example.oficiosprojectspring.repository;
 
 import com.example.oficiosprojectspring.repository.model.Usuario;
-import com.mysql.cj.MysqlType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;

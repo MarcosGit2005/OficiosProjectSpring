@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public class OficioRepository implements IOficioRepository{
     @Autowired
-    @Qualifier("mysqlDataSource")
+    @Qualifier("oracleDataSource")
     private DataSource dataSource;
 
     @Override
