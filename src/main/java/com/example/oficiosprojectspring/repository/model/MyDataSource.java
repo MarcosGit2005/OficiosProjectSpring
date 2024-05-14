@@ -19,10 +19,13 @@ public class MyDataSource {
 
         try {
             dataSource = new OracleDataSource();
-            dataSource.setURL("jdbc:oracle:thin:@//192.168.1.145:1539/xe");
-            dataSource.setUser("sys as sysdba");
-            dataSource.setPassword("oracle");
-            dataSource.setRoleName("sysdba");
+            // dataSource.setURL("jdbc:oracle:thin:@//192.168.1.145:1539/xe"); PC-CASA
+            dataSource.setURL("jdbc:oracle:thin:@//172.28.201.239:1521/xe");
+            // dataSource.setUser("sys as sysdba"); PC-CASA
+            dataSource.setUser("C##1DAMRUBIO");
+            // dataSource.setPassword("oracle"); PC-CASA
+            dataSource.setPassword("password");
+            //dataSource.setRoleName("sysdba");
         } catch (SQLException e ){
             e.printStackTrace();
         }

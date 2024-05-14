@@ -20,10 +20,11 @@ public class UsuarioRepository implements IUsuarioRepository{
     @Override
     public Usuario getById(int idUsuario)  throws SQLException{
         Usuario usuario = null;
-        String query = "SELECT * FROM Usuario WHERE idUsuario = ?";
+        String query = "SELECT * FROM USUARIO WHERE idUsuario = ?";
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareCall(query)){
             preparedStatement.setInt(1,idUsuario);
+
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()){
@@ -40,10 +41,10 @@ public class UsuarioRepository implements IUsuarioRepository{
     @Override
     public List<Usuario> getAll() throws SQLException{
         List<Usuario> usuarios = new ArrayList<>();
-        String query = "{ call obtener_usuarios() }";
+        String query = "SELECT * FROM USUARIO";
         try (Connection connection = dataSource.getConnection();
-             CallableStatement cs = connection.prepareCall(query)){
-            ResultSet resultSet = cs.executeQuery();
+             Statement statement = connection.prepareStatement(query)){
+            ResultSet resultSet = statement.getResultSet();
 
             while (resultSet.next()){
                 usuarios.add(Usuario.builder().idUsuario(resultSet.getInt(1))

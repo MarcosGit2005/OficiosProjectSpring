@@ -27,4 +27,5 @@ public class UsuarioService {
     public Usuario insertUsuario(Usuario usuario) throws SQLException{
         return usuarioRepository.insertUsuario(usuario);
     }
+
 }
