@@ -1,20 +1,30 @@
 package com.example.oficiosprojectspring.repository.model;
 
-import com.mysql.cj.jdbc.MysqlDataSource;
+import oracle.jdbc.pool.OracleDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Properties;
 
 @Configuration
 public class MyDataSource {
-    @Bean(name="mysqlDataSource")
-    public static DataSource getMySQLDataSorce(){
-        MysqlDataSource dataSource = new MysqlDataSource();
-        dataSource.setUrl("jdbc:mysql://localhost:3306/java");
-        dataSource.setUser("mrubiod");
-        dataSource.setPassword("1111");
+    @Bean(name="oracleDataSource")
+    public static DataSource getOracleDataSorce(){
+
+        OracleDataSource dataSource = null;
+
+        try {
+            dataSource = new OracleDataSource();
+            dataSource.setURL("jdbc:oracle:thin:@//192.168.1.145:1539/xe");
+            dataSource.setUser("sys");
+            dataSource.setPassword("oracle");
+        } catch (SQLException e ){
+            e.printStackTrace();
+        }
 
         return dataSource;
     }

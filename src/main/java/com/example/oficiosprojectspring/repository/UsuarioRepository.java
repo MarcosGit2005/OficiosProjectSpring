@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 @Repository
 public class UsuarioRepository implements IUsuarioRepository{
     @Autowired
-    @Qualifier("mysqlDataSource")
+    @Qualifier("oracleDataSource")
     private DataSource dataSource;
 
     @Override
